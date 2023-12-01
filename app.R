@@ -1,73 +1,220 @@
 library(shiny)
 library(shinythemes)
+library(data.table)
+library(ggplot2)
 
-stunting <- c(31.2, 21.1, 25.2, 17, 18, 18.6, 19.8, 15.2, 18.5, 15.4, 14.8, 20.2, 20.8, 16.4, 19.2, 20, 8, 32.7,
-              35.3, 27.8, 26.9, 24.6, 23.9, 22.1, 20.5, 28.2, 27.2, 27.7, 23.8, 35, 26.1, 26.1, 30, 34.6)
-IPM <- c(72.80, 72.71, 73.26 ,73.52, 72.14, 70.90, 72.16, 70.45, 72.24, 76.46, 81.65, 73.12, 72.79, 80.64, 72.75,
-         73.32, 76.44, 69.46, 65.90, 68.63, 71.63, 71.84, 77.44, 71.83, 73.81, 70.28, 72.82, 72.23, 69.81, 66.92,
-         70.22, 69.47, 65.89, 61.39)
+not_sel <- "Not Selected"
 
+about_page <- tabPanel(
+  title = "About",
+  titlePanel("About"),
+  "Visualisasi Data Kuantitatif",
+  br(),
+  "Fradha Intan Arassah G1501221018",
+  br(),
+  "Diaztri Hazam",
+  br(),
+  "Firda"
+)
 
-satu_page <- tabPanel(
-  title = "Satu Variabel",
+main_page <- tabPanel(
+  title = "Analysis",
+  titlePanel("Analysis"),
   sidebarLayout(
     sidebarPanel(
-      selectInput("dataset", "Pilih Dataset", choices = c("Stunting", "IPM")),
-      fileInput("file", "Masukkan File CSV", multiple = T, accept = ".csv"),
-      textAreaInput("num1", "Observasi")
+      title = "Inputs",
+      fileInput("csv_input", "Select CSV File to Import", accept = ".csv"),
+      selectInput("num_var_1", "Numerical Variable 1", choices = c(not_sel)),
+      selectInput("num_var_2", "Numerical Variable 2", choices = c(not_sel)),
+      selectInput("fact_var", "Factor Variable", choices = c(not_sel)),
+      br(),
+      actionButton("run_button", "Run Analysis", icon = icon("play"))
     ),
     mainPanel(
-      fluidRow(
-        column(width = 1, tableOutput("num1_summary_table"))
-      ),
-      plotOutput("plot1"),
-      plotOutput("plot2")
+      tabsetPanel(
+        tabPanel(
+          title = "Plot",
+          plotOutput("plot_1")
+        ),
+        tabPanel(
+          title = "Statistics",
+          fluidRow(
+            column(width = 4, strong(textOutput("num_var_1_title"))),
+            column(width = 4, strong(textOutput("num_var_2_title"))),
+            column(width = 4, strong(textOutput("fact_var_title")))
+          ),
+          fluidRow(
+            column(width = 4, tableOutput("num_var_1_summary_table")),
+            column(width = 4, tableOutput("num_var_2_summary_table")),
+            column(width = 4, tableOutput("fact_var_summary_table"))
+          ),
+          fluidRow(
+            column(width = 12, strong("Combined Statistics"))
+          ),
+          fluidRow(
+            column(width = 12, tableOutput("combined_summary_table"))
+          )
+          
+        )
+      )
     )
   )
 )
 
-dua_page <- tabPanel(
-  title = "Dua Variabel"
-)
+draw_plot_1 <- function(data_input, num_var_1, num_var_2, fact_var){
+  if(fact_var!=not_sel){
+    data_input[,(fact_var):= as.factor(data_input[,get(fact_var)])]
+  }
+  if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var != not_sel){
+    ggplot(data = data_input,
+           aes_string(x = num_var_1, y = num_var_2, color = fact_var)) +
+      geom_point()
+  }
+  else if(num_var_1 != not_sel & num_var_2 != not_sel & fact_var == not_sel){
+    ggplot(data = data_input,
+           aes_string(x = num_var_1, y = num_var_2)) +
+      geom_point()
+  }
+  else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var != not_sel){
+    ggplot(data = data_input,
+           aes_string(x = fact_var, y = num_var_1)) +
+      geom_violin()
+  }
+  else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var != not_sel){
+    ggplot(data = data_input,
+           aes_string(x = fact_var, y = num_var_2)) +
+      geom_violin()
+  }
+  else if(num_var_1 != not_sel & num_var_2 == not_sel & fact_var == not_sel){
+    ggplot(data = data_input,
+           aes_string(x = num_var_1)) +
+      geom_histogram()
+  }
+  else if(num_var_1 == not_sel & num_var_2 != not_sel & fact_var == not_sel){
+    ggplot(data = data_input,
+           aes_string(x = num_var_2)) +
+      geom_histogram()
+  }
+  else if(num_var_1 == not_sel & num_var_2 == not_sel & fact_var != not_sel){
+    ggplot(data = data_input,
+           aes_string(x = fact_var)) +
+      geom_bar()
+  }
+}
+
+create_num_var_table <- function(data_input, num_var){
+  if(num_var != not_sel){
+    col <- data_input[,get(num_var)]
+    if (length(col)>5000) col_norm <- sample(col,5000) else col_norm <- col
+    norm_test <- shapiro.test(col_norm)
+    statistic <- c("mean", "median", "5th percentile", "95th percentile",
+                   "Shapiro statistic", "Shapiro p-value")
+    value <- c(round(mean(col),2), round(median(col),2),
+               round(quantile(col, 0.05),2), round(quantile(col, 0.95),2),
+               norm_test$statistic, norm_test$p.value)
+    data.table(statistic, value)
+  }
+}
+
+create_fact_var_table <- function(data_input, fact_var){
+  if(fact_var != not_sel){
+    freq_tbl <- data_input[,.N, by = get(fact_var)]
+    freq_tbl <- setnames(freq_tbl,c("factor_value", "count"))
+    freq_tbl
+  }
+}
+
+create_combined_table <- function(data_input, num_var_1, num_var_2, fact_var){
+  if(fact_var != not_sel){
+    if(num_var_1 != not_sel & num_var_2 != not_sel){
+      res_tbl <- data_input[,.(correlation = cor(get(num_var_1), get(num_var_2))), by = fact_var]
+    }
+    else if(num_var_1 != not_sel & num_var_2 == not_sel){
+      res_tbl <- data_input[,.(mean = mean(get(num_var_1))), by = fact_var]
+    }
+    else if(num_var_1 == not_sel & num_var_2 != not_sel){
+      res_tbl <- data_input[,.(mean = mean(get(num_var_2))), by = fact_var]
+    }
+  }
+  else if(num_var_1 != not_sel & num_var_2 != not_sel){
+    res_tbl <- data.table(
+      statistic = c("correlation"),
+      value = c(cor(
+        data_input[,get(num_var_1)],
+        data_input[,get(num_var_2)])))
+  }
+  return(res_tbl)
+}
 
 ui <- navbarPage(
-  title = "Eksplorasi Data Kuantitatif",
-  theme = shinytheme('simplex'),
-  satu_page,
-  dua_page
+  title = "Data Analyser",
+  theme = shinytheme('united'),
+  main_page,
+  about_page
 )
 
-server <- function(input, output, session) {
+server <- function(input, output){
   
-  datasetInput <- reactive({
-    switch(input$dataset,
-           "Stunting" = stunting,
-           "IPM" = IPM)
+  options(shiny.maxRequestSize=10*1024^2) 
+  
+  data_input <- reactive({
+    req(input$csv_input)
+    fread(input$csv_input$datapath)
   })
   
-  output$num1_summary_table <- renderTable({
-    dataset <- datasetInput()
-    ukuran <- length(dataset)
-    rata2 <- mean(dataset)
-    std <- sd(dataset)
-    min <- min(dataset)
-    q1 <- quantile(dataset, probs = 0.25)
-    med <- quantile(dataset, probs = 0.5)
-    q3 <- quantile(dataset, probs = 0.75)
-    max <- max(dataset)
-    data.frame("Ukuran" = ukuran, "Rata2" = rata2, "Dev Std" = std, "Terkecil" = min,
-               "Q1" = q1, "Nilai.Tengah" = med, "Q3" = q3, "Terbesar" = max)
+  observeEvent(data_input(),{
+    choices <- c(not_sel,names(data_input()))
+    updateSelectInput(inputId = "num_var_1", choices = choices)
+    updateSelectInput(inputId = "num_var_2", choices = choices)
+    updateSelectInput(inputId = "fact_var", choices = choices)
   })
   
-  output$plot1 <- renderPlot({
-    dataset <- datasetInput()
-    hist(dataset, col = 'gray', main = paste("Histogram", input$dataset), xlab = paste(input$dataset))
+  num_var_1 <- eventReactive(input$run_button,input$num_var_1)
+  num_var_2 <- eventReactive(input$run_button,input$num_var_2)
+  fact_var <- eventReactive(input$run_button,input$fact_var)
+  
+  # plot
+  
+  plot_1 <- eventReactive(input$run_button,{
+    draw_plot_1(data_input(), num_var_1(), num_var_2(), fact_var())
   })
   
-  output$plot2 <- renderPlot({
-    dataset <- datasetInput()
-    boxplot(dataset, main = paste("Boxplot", input$dataset), horizontal = TRUE)
+  output$plot_1 <- renderPlot(plot_1())
+  
+  # 1-d summary tables
+  
+  output$num_var_1_title <- renderText(paste("Num Var 1:",num_var_1()))
+  
+  num_var_1_summary_table <- eventReactive(input$run_button,{
+    create_num_var_table(data_input(), num_var_1())
   })
+  
+  output$num_var_1_summary_table <- renderTable(num_var_1_summary_table(),colnames = FALSE)
+  
+  output$num_var_2_title <- renderText(paste("Num Var 2:",num_var_2()))
+  
+  num_var_2_summary_table <- eventReactive(input$run_button,{
+    create_num_var_table(data_input(), num_var_2())
+  })
+  
+  output$num_var_2_summary_table <- renderTable(num_var_2_summary_table(),colnames = FALSE)
+  
+  output$fact_var_title <- renderText(paste("Factor Var:",fact_var()))
+  
+  fact_var_summary_table <- eventReactive(input$run_button,{
+    create_fact_var_table(data_input(), fact_var())
+  })
+  
+  output$fact_var_summary_table <- renderTable(fact_var_summary_table(),colnames = FALSE)
+  
+  # multi-d summary table
+  
+  combined_summary_table <- eventReactive(input$run_button,{
+    create_combined_table(data_input(), num_var_1(), num_var_2(), fact_var())
+  })
+  
+  output$combined_summary_table <- renderTable(combined_summary_table())
+  
 }
 
 shinyApp(ui = ui, server = server)
