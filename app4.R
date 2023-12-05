@@ -1,0 +1,139 @@
+library(shiny)
+library(shinydashboard)
+library(shinythemes)
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(data.table)
+
+stunting <- c(31.2, 21.1, 25.2, 17, 18, 18.6, 19.8, 15.2, 18.5, 15.4, 14.8, 20.2, 20.8, 16.4, 19.2, 20, 8, 32.7,
+              35.3, 27.8, 26.9, 24.6, 23.9, 22.1, 20.5, 28.2, 27.2, 27.7, 23.8, 35, 26.1, 26.1, 30, 34.6)
+IPM <- c(72.80, 72.71, 73.26 ,73.52, 72.14, 70.90, 72.16, 70.45, 72.24, 76.46, 81.65, 73.12, 72.79, 80.64, 72.75,
+         73.32, 76.44, 69.46, 65.90, 68.63, 71.63, 71.84, 77.44, 71.83, 73.81, 70.28, 72.82, 72.23, 69.81, 66.92,
+         70.22, 69.47, 65.89, 61.39)
+
+not_sel <- "Not Selected"
+about_page <- tabPanel(
+  title = "About",
+  titlePanel("About"),
+  "Visualisasi Data Kuantitatif",
+  br(),
+  "Fradha Intan Arassah G1501221018",
+  br(),
+  "Diaztri Hazam G1501221032",
+  br(),
+  "Firda Aulia Maghfiroh G1501222049"
+)
+
+satu_page <- tabPanel(
+  title = "Satu Variabel",
+  sidebarLayout(
+    sidebarPanel(
+      radioButtons("data_source", "Data Source:",
+                   choices = c("Upload Own File", "Use Available File")),
+      conditionalPanel(
+        condition = "input.data_source == 'Upload Own File'",
+        fileInput("files", "Select CSV File to Import", accept = ".csv"),
+        selectInput("variable", "Select Variable", choices = c(not_sel)),
+        radioButtons("pl", "Pilih Tipe Plot",
+                     choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Use Available File'",
+        selectInput("available_file", "Select Available File:",
+                    choices = c("stunting", "IPM")),
+        selectInput("variable", "Select Variable", ""),
+        radioButtons("pl", "Pilih Tipe Plot",
+                     choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
+      ),
+      br(),
+      actionButton("run_button", "Run Analysis", icon = icon("play"))
+    ),
+    mainPanel(
+      tabsetPanel(
+        tabPanel(
+          title = "Plot",
+          plotOutput("plot")
+        ),
+        tabPanel(
+          title = "Statistics",
+          fluidRow(
+            column(width = 4, strong(textOutput("variable_title"))),
+          ),
+          fluidRow(
+            column(width = 4, tableOutput("variable_summary_table")),
+          ),
+        )
+      )
+  )
+)
+)
+
+dua_page <- tabPanel(
+  title = "Dua Variabel"
+)
+
+ui <- navbarPage(
+  title = "Eksplorasi Data Kuantitatif",
+  theme = shinytheme('simplex'),
+  satu_page,
+  dua_page,
+  about_page
+)
+
+server <- function(input, output, session) {
+  # Reactive function to read the uploaded files or available file
+  datasets <- reactive({
+    if (input$data_source == "Upload Own File") {
+      req(input$files)
+      lapply(input$files$datapath, read.csv)
+    } else {
+      read.csv(input$available_file)
+    }
+  })
+  
+  # Update variable and grouping variable choices based on column names
+  observe({
+    if (input$data_source == "Upload Own File") {
+      updateSelectInput(session, "variable", choices = colnames(datasets()[[1]]))
+    } else {
+      updateSelectInput(session, "variable", choices = colnames(datasets()))
+    }
+  })
+  
+  # Reactive function to generate summary statistics
+  summary_data <- reactive({
+    req(input$variable, input$variable, datasets())
+    if (input$data_source == "Upload Own File") {
+      datasets_combined <- bind_rows(Map(cbind, datasets(), group = seq_along(datasets())))
+      selected_data <- datasets_combined %>%
+      select(input$group, input$variable)
+    } else {
+      selected_data <- datasets() %>%
+      select(input$group, input$variable)
+    }
+  })
+  
+  
+# plot
+  output$plot <- renderPlot({
+    dataset <- datasets()
+    if(input$pl == "Histogram")
+      hist(dataset[,input$variable], col = 'gray', main = paste("Histogram of", input$dataset), xlab = input$dataset, ylab = "Frequency")
+    else if(input$pl == "Boxplot")
+      boxplot(dataset[,input$variable], col = 'gray', main = paste("Boxplot of", input$dataset), horizontal = TRUE)
+    else if(input$pl == "Dotplot")
+      stripchart(dataset[, input$variable], method = "stack", pch = 19, ylim = c(0,10),
+                 main = paste("Dotplot", input$dataset), xlab = paste(input$dataset))
+  })
+  
+  # Display summary of the dataset for upload
+  output$variable_title <- renderText(paste("Variable:", input$variable()))
+  output$variable_summary_table <- renderPrint({
+    summary(summary_data())
+  })
+}
+  
+
+# Run the Shiny app
+shinyApp(ui, server)
