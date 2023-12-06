@@ -134,8 +134,8 @@ server <- function(input, output, session) {
   observe({updateSelectInput(session, "var2_dt", choices = colnames(dataset2Input()))})
   
   ## fungsi reactive variabel
-  var1dtInput <- reactive({input$var1_dt})
-  var2dtInput <- reactive({input$var2_dt})
+  x1 <- reactive({input$var1_dt})
+  x2 <- reactive({input$var2_dt})
   
   
   # fungsi reactive untuk memilih tipe plot
@@ -224,8 +224,9 @@ server <- function(input, output, session) {
                  "Terkecil" = c(min_1, min_2), "Q1" = c(q1_1, q1_2), "Nilai.Tengah" = c(med_1, med_2),
                  "Q3" = c(q3_1, q3_2), "Terbesar" = c(max_1, max_2))
     } else if(dtSource2() == "Data Tersedia"){
-      df2 <- data.frame(dataset2Input())
-      var_1 <- df2[, var1dtInput()]
+      df2 <- req(dataset2Input())
+      xx1 <- req(x1())
+      var_1 <- df2[,xx1]
       ukuran_1 <- length(var_1)
       rata2_1 <- mean(var_1)
       std_1 <- sd(var_1)
@@ -234,7 +235,8 @@ server <- function(input, output, session) {
       med_1 <- quantile(var_1, probs = 0.5)
       q3_1 <- quantile(var_1, probs = 0.75)
       max_1 <- max(var_1)
-      var_2 <- df[, paste("var2dtInput()")]
+      xx2 <- req(x2())
+      var_2 <- df2[,xx2]
       ukuran_2 <- length(var_2)
       rata2_2 <- mean(var_2)
       std_2 <- sd(var_2)
@@ -258,7 +260,7 @@ server <- function(input, output, session) {
       if(plot3Input() == "Histogram"){
         par(mfrow = c(2, 1))
         hist(var1, col = 'gray', main = paste("Histogram", input$var1_fl), xlab = paste(input$var1_fl))
-        hist(var2, col = 'gray', main = paste("Histogram", input$var2_fl), xlab = paste(input$var1_fl))
+        hist(var2, col = 'gray', main = paste("Histogram", input$var2_fl), xlab = paste(input$var2_fl))
       } else if(plot3Input() == "Boxplot"){
         par(mfrow = c(2, 1))
         boxplot(var1, main = paste("Boxplot", input$var1_fl), horizontal = TRUE)
@@ -271,14 +273,26 @@ server <- function(input, output, session) {
                    main = paste("Dotplot", input$var2_fl), xlab = paste(input$var2_fl))
       }
     } else if(dtSource2() == "Data Tersedia"){
-      dataset <- dataset2Input()
-      if(plot4Input() == "Histogram")
-        hist(dataset, col = 'gray', main = paste("Histogram", input$dataset), xlab = paste(input$dataset))
-      else if(plot4Input() == "Boxplot")
-        boxplot(dataset, main = paste("Boxplot", input$dataset), horizontal = TRUE)
-      else if(plot4Input() == "Dotplot")
-        stripchart(dataset, method = "stack", pch = 21, bg = "gray", col = "black", cex = 5, ylim = c(0,5),
-                   main = paste("Dotplot", input$dataset), xlab = paste(input$dataset))
+      df2 <- req(dataset2Input())
+      xx1 <- req(x1())
+      var_1 <- df2[,xx1]
+      xx2 <- req(x2())
+      var_2 <- df2[,xx2]
+      if(plot4Input() == "Histogram"){
+        par(mfrow = c(2, 1))
+        hist(var_1, col = 'gray', main = paste("Histogram", input$var1_dt), xlab = paste(input$var1_dt))
+        hist(var_2, col = 'gray', main = paste("Histogram", input$var2_dt), xlab = paste(input$var2_dt))
+      } else if(plot4Input() == "Boxplot"){
+        par(mfrow = c(2, 1))
+        boxplot(var_1, main = paste("Boxplot", input$var1_dt), horizontal = TRUE)
+        boxplot(var_2, main = paste("Boxplot", input$var2_dt), horizontal = TRUE)
+      } else if(plot4Input() == "Dotplot"){
+        par(mfrow = c(2, 1))
+        stripchart(var_1, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
+                   main = paste("Dotplot", input$var1_dt), xlab = paste(input$var1_dt))
+        stripchart(var_2, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
+                   main = paste("Dotplot", input$var2_dt), xlab = paste(input$var2_dt))
+      }
     }
   })
 }
