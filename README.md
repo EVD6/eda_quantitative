@@ -22,9 +22,7 @@
 Deskripsi dashboard untuk visualisasi data kuantitatif
 
 <div align="justify">
-Dalam project ini menggunakan topik eksplorasi dan visualisasi dari data kuantitatif, dengan data yang digunakan pada project ini adalah data kuantitatif.
-
-Data kuantitatif adalah jenis data yang menyatakan atau mengukur jumlah atau kuantitas suatu variabel. Data kuantitatif yang sudah tersedia dalam dashboard ini adalah data prevelensi stunting dan data IPM. Data ini dapat diukur dan dihitung dalam dashboard ini.
+Dalam project ini menggunakan topik eksplorasi dan visualisasi dari data kuantitatif, dengan data yang digunakan pada project ini adalah data kuantitatif. Data kuantitatif adalah jenis data yang menyatakan atau mengukur jumlah atau kuantitas suatu variabel. Data kuantitatif yang sudah tersedia dalam dashboard ini adalah data prevelensi stunting dan data IPM. Data ini dapat diukur dan dihitung dalam dashboard ini.
 
 Eksplorasi data merupakan awal proses untuk mengidentifikasi pola, anomali, dan tren pada data yang mungkin tersembunyi. Hal ini juga melibatkan penggunaan metode statistik dan visualisasi untuk mendapatkan pemahaman yang lebih baik tentang struktur dan karakteristik data. Sementara Visualisasis Data adalah proses representasi grafis dari data, pada dashboard ini digunakan plot histogram, boxplot dan dotplot untuk mempermudah memahami pola, tren, dan relasi di dalam data. Visualisasi juga membantu membuat informasi yang kompleks lebih dapat dipahami dan dapat menjadi alat eksplorasi yang kuat.
 
