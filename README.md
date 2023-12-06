@@ -12,7 +12,7 @@
 
 ## :bookmark_tabs: Main Menu
 
-- [Tentang Data Base My Skincare](#memo-tentang-dashboard)
+- [Tentang Dashboard](#memo-tentang-dashboard)
 - [Deskripsi Syntax](#computer-deskripsi-syntax)
 - [Dokumentasi](#camera_flash-dokumentasi)
 - [Demo](#video_camera-demo)
@@ -22,7 +22,7 @@
 Deskripsi dashboard untuk visualisasi data kuantitatif
 
 <div align="justify">
-Data yang digunakan pada project ini adalah data kuantitatif.
+Data yang digunakan pada project ini adalah data kuantitatif. (lanjut nanti aja)
 </div>
 
 ## :computer: Deskripsi Syntax
