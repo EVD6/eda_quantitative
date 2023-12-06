@@ -39,7 +39,7 @@ Data yang digunakan pada project ini adalah data kuantitatif.
 
 | url                      |
 | ------------------------ | 
-|[ [https://rekaagustiaastari.shinyapps.io/MySkincare/](https://diaztrihazam.shinyapps.io/eda_quantitative/)]([https://rekaagustiaastari.shinyapps.io/MySkincare/](https://diaztrihazam.shinyapps.io/eda_quantitative/))| 
+|[https://diaztrihazam.shinyapps.io/eda_quantitative/](https://diaztrihazam.shinyapps.io/eda_quantitative/)| 
 
 ## :fireworks: Anggota Tim Pengembang
 
