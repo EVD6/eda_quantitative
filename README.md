@@ -22,7 +22,7 @@
 Deskripsi dashboard untuk visualisasi data kuantitatif
 
 <div align="justify">
-Dalam project ini menggunakan topik eksplorasi dan visualisasi dari data kuantitatif. Data yang digunakan pada project ini adalah data kuantitatif
+Dalam project ini menggunakan topik eksplorasi dan visualisasi dari data kuantitatif, dengan data yang digunakan pada project ini adalah data kuantitatif.
 
 Data kuantitatif adalah jenis data yang menyatakan atau mengukur jumlah atau kuantitas suatu variabel. Data kuantitatif yang sudah tersedia dalam dashboard ini adalah data prevelensi stunting dan data IPM. Data ini dapat diukur dan dihitung dalam dashboard ini.
 
