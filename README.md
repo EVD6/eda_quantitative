@@ -15,6 +15,7 @@
 - [Tentang Data Base My Skincare](#memo-tentang-dashboard)
 - [Deskripsi Syntax](#computer-deskripsi-syntax)
 - [Dokumentasi](#camera_flash-dokumentasi)
+- [Demo](#video_camera-demo)
 - [Anggota Tim Pengembang](#fireworks-anggota-tim-pengembang)
 
 ## :memo: Tentang Dashboard 
@@ -33,6 +34,12 @@ Data yang digunakan pada project ini adalah data kuantitatif.
 2️⃣ Screenshot Submenu Dua Variabel
 
 3️⃣ Screenshot Submenu Tentang
+
+## :video_camera: Demo
+
+| url                      |
+| ------------------------ | 
+|[ [https://rekaagustiaastari.shinyapps.io/MySkincare/](https://diaztrihazam.shinyapps.io/eda_quantitative/)]([https://rekaagustiaastari.shinyapps.io/MySkincare/](https://diaztrihazam.shinyapps.io/eda_quantitative/))| 
 
 ## :fireworks: Anggota Tim Pengembang
 
