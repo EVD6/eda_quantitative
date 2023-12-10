@@ -64,25 +64,75 @@ satu_page <- tabPanel(
   title = "Satu Variabel",
   sidebarLayout(
     sidebarPanel(
-      radioButtons("data_source", "Sumber Data:",
+      radioButtons("data_source", strong("Sumber Data:"),
                    choices = c("Unggah Dokumen", "Data Tersedia")),
       conditionalPanel(
         condition = "input.data_source == 'Unggah Dokumen'",
-        fileInput("file", "Masukkan Dokumen CSV", multiple = T, accept = ".csv"),
-        selectInput("variable", "Pilih Variabel", choices = c(not_sel)),
-        radioButtons("pl1", "Pilih Tipe Plot",
+        fileInput("file", strong("Masukkan Dokumen CSV"), multiple = T, accept = ".csv"),
+        selectInput("variable", strong("Pilih Variabel"), choices = c(not_sel)),
+        tags$hr(),
+        radioButtons("pl1", strong("Pilih Tipe Plot"), inline = TRUE,
                      choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
       ),
       conditionalPanel(
+        condition = "input.data_source == 'Unggah Dokumen' & input.pl1 == 'Histogram'",
+        sliderInput("bin1", strong("Pilih Ukuran Binwidth"), min = 5, max = 150, value = 50),
+        textInput("jdl_his_1", strong("Masukkan Judul"), "Histogram")
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Unggah Dokumen' & input.pl1 == 'Boxplot'",
+        checkboxInput("vtc1", "Boxplot Vertikal", value = FALSE),
+        textInput("jdl_box_1", strong("Masukkan Judul"), "Boxplot")
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Unggah Dokumen' & input.pl1 == 'Dotplot'",
+        sliderInput("size1", strong("Pilih Ukuran Titik"), min = 0.1, max = 5, value = 2),
+        textInput("jdl_dot_1", strong("Masukkan Judul"), "Dotplot")
+      ),
+      conditionalPanel(
         condition = "input.data_source == 'Data Tersedia'",
-        selectInput("dataset", "Pilih Data", choices = c("Prevalensi Stunting (%)", "IPM")),
-        radioButtons("pl2", "Pilih Tipe Plot",
+        selectInput("dataset", strong("Pilih Data"), choices = c("Prevalensi Stunting (%)", "Lama Waktu Bekerja (jam)")),
+        tags$hr(),
+        radioButtons("pl2", strong("Pilih Tipe Plot"), inline = TRUE,
                      choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Data Tersedia' & input.pl2 == 'Histogram'",
+        sliderInput("bin2", strong("Pilih Ukuran Binwidth"), min = 5, max = 150, value = 50),
+        textInput("jdl_his_2", strong("Masukkan Judul"), "Histogram")
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Data Tersedia' & input.pl2 == 'Boxplot'",
+        checkboxInput("vtc2", "Boxplot Vertikal", value = FALSE),
+        textInput("jdl_box_2", strong("Masukkan Judul"), "Boxplot")
+      ),
+      conditionalPanel(
+        condition = "input.data_source == 'Data Tersedia' & input.pl2 == 'Dotplot'",
+        sliderInput("size2", strong("Pilih Ukuran Titik"), min = 0.1, max = 5, value = 2),
+        textInput("jdl_dot_2", strong("Masukkan Judul"), "Dotplot")
+      ),
+      tags$b("Pilih Warna:"),
+      fluidRow(
+        column(width = 4, colourInput("col_his", "Histogram", "grey", showColour = "background")),
+        column(width = 4, colourInput("col_box", "Boxplot", "grey", showColour = "background")),
+        column(width = 4, colourInput("col_dot", "Dotplot", "grey", showColour = "background"))
       )
-    ),
+    )
+    ,
     mainPanel(
-      tableOutput("num1_summary_table"),
-      plotOutput("plot")
+      tabsetPanel(
+        tabPanel(
+          title = "Statistik Deskriptif",
+          br(),
+          tableOutput("num1_summary_table")
+        ),
+        tabPanel(
+          title = "Plot",
+          br(),
+          plotlyOutput("plot"),
+          plotOutput("dotplot")
+        )
+      )
     )
   )
 )
@@ -95,34 +145,82 @@ dua_page <- tabPanel(
   title = "Dua Variabel",
   sidebarLayout(
     sidebarPanel(
-      radioButtons("data2_source", "Sumber Data:",
-                   choices = c("Unggah Dokumen", "Data Tersedia")),
+      radioButtons("data2_source", strong("Sumber Data:"),
+                   choices = c("Unggah Dokumen", "Data Tersedia")
+      ),
       conditionalPanel(
         condition = "input.data2_source == 'Unggah Dokumen'",
-        fileInput("file2", "Masukkan Dokumen CSV", multiple = T, accept = ".csv"),
-        selectInput("var1_fl", "Pilih Variabel 1", choices = c(not_sel)),
-        selectInput("var2_fl", "Pilih Variabel 2", choices = c(not_sel)),
-        radioButtons("pl3", "Pilih Tipe Plot",
+        fileInput("file2", strong("Masukkan Dokumen CSV"), multiple = T, accept = ".csv"),
+        selectInput("var1_fl", strong("Pilih Variabel 1"), choices = c(not_sel)),
+        selectInput("var2_fl", strong("Pilih Variabel 2"), choices = c(not_sel)),
+        tags$hr(),
+        radioButtons("pl3", strong("Pilih Tipe Plot"), inline = TRUE,
                      choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
       ),
       conditionalPanel(
+        condition = "input.data2_source == 'Unggah Dokumen' & input.pl3 == 'Histogram'",
+        fluidRow(
+          column(width = 6, textInput("nama_val", strong("Masukkan Values"), "Values")),
+          column(width = 6, textInput("jdl_his_3", strong("Masukkan Judul"), "Histogram")))
+      ),
+      conditionalPanel(
+        condition = "input.data2_source == 'Unggah Dokumen' & input.pl3 == 'Boxplot'",
+        checkboxInput("vtc3", "Boxplot Vertikal", value = FALSE),
+        fluidRow(
+          column(width = 6, textInput("nama_val2", strong("Masukkan Values"), "Values")),
+          column(width = 6, textInput("jdl_box_3", strong("Masukkan Judul"), "Boxplot")))
+      ),
+      conditionalPanel(
+        condition = "input.data2_source == 'Unggah Dokumen' & input.pl3 == 'Dotplot'",
+        sliderInput("size3", strong("Pilih Ukuran Titik"), min = 0.1, max = 5, value = 2),
+        fluidRow(
+          column(width = 6, textInput("nama_val3", strong("Masukkan Values"), "Values")),
+          column(width = 6, textInput("jdl_dot_3", strong("Masukkan Judul"), "Dotplot")))
+      ),
+      conditionalPanel(
         condition = "input.data2_source == 'Data Tersedia'",
-        selectInput("dataset2", "Pilih Data", choices = c("Tinggi Badan (cm)")),
-        selectInput("var1_dt", "Pilih Variabel 1", choices = c(not_sel)),
-        selectInput("var2_dt", "Pilih Variabel 2", choices = c(not_sel)),
-        radioButtons("pl4", "Pilih Tipe Plot",
+        selectInput("dataset2", strong("Pilih Data"), choices = c("Tinggi Badan (cm)")),
+        selectInput("var1_dt", strong("Pilih Variabel 1"), choices = c(not_sel)),
+        selectInput("var2_dt", strong("Pilih Variabel 2"), choices = c(not_sel)),
+        tags$hr(),
+        radioButtons("pl4", strong("Pilih Tipe Plot"), inline = TRUE,
                      choices = c(Histogram = "Histogram", Boxplot = "Boxplot", Dotplot = "Dotplot"))
+      ),
+      conditionalPanel(
+        condition = "input.data2_source == 'Data Tersedia' & input.pl4 == 'Histogram'",
+        textInput("jdl_his_4", strong("Masukkan Judul"), "Histogram")
+      ),
+      conditionalPanel(
+        condition = "input.data2_source == 'Data Tersedia' & input.pl4 == 'Boxplot'",
+        checkboxInput("vtc4", "Boxplot Vertikal", value = FALSE),
+        textInput("jdl_box_4", strong("Masukkan Judul"), "Boxplot")
+      ),
+      conditionalPanel(
+        condition = "input.data2_source == 'Data Tersedia' & input.pl4 == 'Dotplot'",
+        sliderInput("size4", strong("Pilih Ukuran Titik"), min = 0.1, max = 5, value = 2),
+        textInput("jdl_dot_4", strong("Masukkan Judul"), "Dotplot")
       )
     ),
     mainPanel(
-      tableOutput("num2_summary_table"),
-      plotOutput("plot2")
+      tabsetPanel(
+        tabPanel(
+          title = "Statistik Deskriptif",
+          br(),
+          tableOutput("num2_summary_table")
+        ),
+        tabPanel(
+          title = "Plot",
+          br(),
+          plotlyOutput("plot2"),
+          plotOutput("dotplot2")
+        )
+      )
     )
   )
 )
 ```
 
-Terakhir, Submenu Tentang yang mendeskripsikan nama dan NIM dari tim pengembang
+Terakhir, Submenu Tentang yang mendeskripsikan tentang visualisasi data kuantitatif
 
 ```{r}
 about_page <- tabPanel(
@@ -130,11 +228,11 @@ about_page <- tabPanel(
   titlePanel("Tentang"),
   "Eksplorasi Data Kuantitatif",
   br(),
-  "Fradha Intan Arassah G1501221018",
+  "Data kuantitatif adalah jenis data yang menyatakan atau mengukur jumlah atau kuantitas suatu variabel. Data kuantitatif yang sudah tersedia dalam dashboard ini adalah data prevelensi stunting dan data IPM. Data ini dapat diukur dan dihitung dalam dashboard ini berdasarkan nilai ukuran, mean, standard deviation, nilai terkecil, Q1, median, Q3 dan nilai terbesar.",
   br(),
-  "Diaztri Hazam G1501221032",
+  "Eksplorasi data merupakan awal proses untuk mengidentifikasi pola, anomali, dan tren pada data yang mungkin tersembunyi. Hal ini juga melibatkan penggunaan metode statistik dan visualisasi untuk mendapatkan pemahaman yang lebih baik tentang struktur dan karakteristik data. Sementara Visualisasis Data adalah proses representasi grafis dari data, pada dashboard ini digunakan plot histogram, boxplot dan dotplot untuk mempermudah memahami pola, tren, dan relasi di dalam data. Visualisasi juga membantu membuat informasi yang kompleks lebih dapat dipahami dan dapat menjadi alat eksplorasi yang tepat.",
   br(),
-  "Firda Aulia Maghfiroh G1501222049"
+  "Hubungan antara data kuantitatif, visualisasi, dan eksplorasi terletak pada pemanfaatan visualisasi untuk menjelajahi dan memahami data kuantitatif. Melalui visualisasi, maka bisa lebih efektif untuk mengeksplorasi distribusi, pola, dan relasi di antara variabel kuantitatif, juga membantu membuat inferensi dan pengambilan keputusan yang lebih baik berdasarkan data tersebut."
 )
 ```
 
@@ -188,7 +286,7 @@ server <- function(input, output, session) {
   datasetInput <- reactive({
     switch(input$dataset,
            "Prevalensi Stunting (%)" = stunting,
-           "IPM" = IPM)
+           "Lama Waktu Bekerja (jam)" = kerja)
   })
   dataset2Input <- reactive({
     switch(input$dataset2,
@@ -210,8 +308,67 @@ server <- function(input, output, session) {
   plot3Input <- reactive({input$pl3})
   plot4Input <- reactive({input$pl4})
   
+  #
+  bin1Input <- reactive({input$bin1})
+  bin2Input <- reactive({input$bin2})
+  
+  # fungsi observe untuk tampilan plot
+  observeEvent(input$pl1,{
+    if(input$pl1 == "Histogram"){
+      show("plot")
+      hide("dotplot")
+    } else if (input$pl1 == "Boxplot"){
+      show("plot")
+      hide("dotplot")
+    } else if(input$pl1 == "Dotplot"){
+      show("dotplot")
+      hide("plot")
+    }
+  })
+  
+  observeEvent(input$pl2,{
+    if(input$pl2 == "Histogram"){
+      show("plot")
+      hide("dotplot")
+    } else if (input$pl2 == "Boxplot"){
+      show("plot")
+      hide("dotplot")
+    } else if(input$pl2 == "Dotplot"){
+      show("dotplot")
+      hide("plot")
+    }
+  })
+  
+  observeEvent(input$pl3,{
+    if(input$pl3 == "Histogram"){
+      show("plot2")
+      hide("dotplot2")
+    } else if (input$pl3 == "Boxplot"){
+      show("plot2")
+      hide("dotplot2")
+    } else if(input$pl3 == "Dotplot"){
+      show("dotplot2")
+      hide("plot2")
+    }
+  })
+  
+  observeEvent(input$pl4,{
+    if(input$pl4 == "Histogram"){
+      show("plot2")
+      hide("dotplot2")
+    } else if (input$pl4 == "Boxplot"){
+      show("plot2")
+      hide("dotplot2")
+    } else if(input$pl4 == "Dotplot"){
+      show("dotplot2")
+      hide("plot2")
+    }
+  })
+  
   # output untuk tabel statistik deskriptif satu variabel
   output$num1_summary_table <- renderTable({
+    
+    ## untuk pilihan unggah dokumen
     if(dtSource() == "Unggah Dokumen"){
       df <- data.frame(fileInput())
       var <- df[, varInput()]
@@ -223,9 +380,15 @@ server <- function(input, output, session) {
       med <- quantile(var, probs = 0.5)
       q3 <- quantile(var, probs = 0.75)
       max <- max(var)
-      data.frame("Ukuran" = ukuran, "Rata2" = rata2, "Dev.Std" = std, "Terkecil" = min,
-                 "Q1" = q1, "Nilai.Tengah" = med, "Q3" = q3, "Terbesar" = max)
-    } else if(dtSource() == "Data Tersedia"){
+      stat <- c("Banyak Data", "Rata-rata", "Deviasi Standar", "Nilai Terkecil", "Q1", "Nilai Tengah", "Q3", "Nilai Terbesar")
+      val <- c(ukuran, rata2, std, min, q1, med, q3, max)
+      tbl <- data.frame(stat, val)
+      colnames(tbl) <- c("", paste(input$variable))
+      tbl
+    }
+    
+    ## untuk pilihan data tersedia
+    else if(dtSource() == "Data Tersedia"){
       dataset <- datasetInput()
       ukuran <- length(dataset)
       rata2 <- mean(dataset)
@@ -235,37 +398,95 @@ server <- function(input, output, session) {
       med <- quantile(dataset, probs = 0.5)
       q3 <- quantile(dataset, probs = 0.75)
       max <- max(dataset)
-      data.frame("Ukuran" = ukuran, "Rata2" = rata2, "Dev.Std" = std, "Terkecil" = min,
-                 "Q1" = q1, "Nilai.Tengah" = med, "Q3" = q3, "Terbesar" = max)
+      stat <- c("Banyak Data", "Rata-rata", "Deviasi Standar", "Nilai Terkecil", "Q1", "Nilai Tengah", "Q3", "Nilai Terbesar")
+      val <- c(ukuran, rata2, std, min, q1, med, q3, max)
+      tbl <- data.frame(stat, val)
+      colnames(tbl) <- c("", paste(input$dataset))
+      tbl
     }
   })
   
   # output plot satu variabel
-  output$plot <- renderPlot({
+  output$plot <- renderPlotly({
+    
+    ## untuk pilihan unggah dokumen
     if(dtSource() == "Unggah Dokumen"){
       df <- data.frame(fileInput())
       var <- df[, varInput()]
+      
+      ### histogram
       if(plot1Input() == "Histogram")
-        hist(var, col = 'gray', main = paste("Histogram", input$variable), xlab = paste(input$variable))
-      else if(plot1Input() == "Boxplot")
-        boxplot(var, main = paste("Boxplot", input$variable), horizontal = TRUE)
-      else if(plot1Input() == "Dotplot")
-        stripchart(var, method = "stack", pch = 21, bg = "gray", col = "black", cex = 5, ylim = c(0,10),
-                   main = paste("Dotplot", input$variable), xlab = paste(input$variable))
-    } else if(dtSource() == "Data Tersedia"){
+        plot_ly(data = df, x = var, type = "histogram", nbinsx = bin1Input(),
+                marker = list(color = input$col_his,
+                              line = list(color = "black", width = 0.5))) %>%
+        layout(title = input$jdl_his_1,
+               xaxis = list(title = paste(input$variable), zeroline = FALSE),
+               yaxis = list(title = "Frekuensi", zeroline = FALSE))
+      
+      ### boxplot
+      else if(plot1Input() == "Boxplot" & input$vtc1 == TRUE)
+        plot_ly(data = df, y = var, type = "box", fillcolor = input$col_box, name = " ",
+                line = list(color = "black")) %>%
+        layout(title = input$jdl_box_1,
+               yaxis = list(title = paste(input$variable), zeroline = FALSE))
+      else if(plot1Input() == "Boxplot" & input$vtc1 == FALSE)
+        plot_ly(data = df, x = var, type = "box", fillcolor = input$col_box, name = " ",
+                line = list(color = "black")) %>%
+        layout(title = input$jdl_box_1,
+               xaxis = list(title = paste(input$variable), zeroline = FALSE))
+    }
+    
+    ## untuk pilihan data tersedia
+    else if(dtSource() == "Data Tersedia"){
       dataset <- datasetInput()
+      
+      ### histogram
       if(plot2Input() == "Histogram")
-        hist(dataset, col = 'gray', main = paste("Histogram", input$dataset), xlab = paste(input$dataset))
-      else if(plot2Input() == "Boxplot")
-        boxplot(dataset, main = paste("Boxplot", input$dataset), horizontal = TRUE)
-      else if(plot2Input() == "Dotplot")
-        stripchart(dataset, method = "stack", pch = 21, bg = "gray", col = "black", cex = 5, ylim = c(0,5),
-                   main = paste("Dotplot", input$dataset), xlab = paste(input$dataset))
+        plot_ly(x = ~dataset, type = "histogram",  nbinsx = bin2Input(),
+                marker = list(color = input$col_his,
+                              line = list(color = "black", width = 0.5))) %>%
+        layout(title = input$jdl_his_2,
+               xaxis = list(title = paste(input$dataset), zeroline = FALSE),
+               yaxis = list(title = "Frekuensi", zeroline = FALSE))
+      ### boxplot
+      else if(plot2Input() == "Boxplot"& input$vtc2 == TRUE)
+        plot_ly(y = ~dataset, type = "box", fillcolor = input$col_box, name = " ",
+                line = list(color = "black")) %>%
+        layout(title = input$jdl_box_2,
+               yaxis = list(title = paste(input$dataset), zeroline = FALSE))
+      else if(plot2Input() == "Boxplot"& input$vtc2 == FALSE)
+        plot_ly(x = ~dataset, type = "box", fillcolor = input$col_box, name = " ",
+                line = list(color = "black")) %>%
+        layout(title = input$jdl_box_2,
+               xaxis = list(title = paste(input$dataset), zeroline = FALSE))
+    }
+  })
+  
+  # output khusus dotplot satu variabel
+  output$dotplot <- renderPlot({
+    
+    ## untuk pilihan unggah dokumen 
+    if(dtSource() == "Unggah Dokumen"){
+      df <- data.frame(fileInput())
+      var <- df[, varInput()]
+      if(plot1Input() == "Dotplot")
+        stripchart(var, method = "stack", pch = 21, bg = input$col_dot, col = "black", cex = input$size1, ylim = c(0,10),
+                   main = paste(input$jdl_dot_1), xlab = paste(input$variable))
+    }
+    
+    ## untuk pilihan data tersedia
+    else if(dtSource() == "Data Tersedia"){
+      dataset <- datasetInput()
+      if(plot2Input() == "Dotplot")
+        stripchart(dataset, method = "stack", pch = 21, bg = input$col_dot, col = "black", cex = input$size2, ylim = c(0,5),
+                   main = paste(input$jdl_dot_2), xlab = paste(input$dataset))
     }
   })
   
   # output untuk tabel statistik deskriptif dua variabel
   output$num2_summary_table <- renderTable({
+    
+    ## untuk pilihan unggah dokumen
     if(dtSource2() == "Unggah Dokumen"){
       df <- data.frame(file2Input())
       var_1 <- df[, var1flInput()]
@@ -286,10 +507,16 @@ server <- function(input, output, session) {
       med_2 <- quantile(var_2, probs = 0.5)
       q3_2 <- quantile(var_2, probs = 0.75)
       max_2 <- max(var_2)
-      data.frame("Ukuran" = c(ukuran_1, ukuran_2), "Rata2" = c(rata2_1, rata2_2), "Dev.Std" = c(std_1, std_2),
-                 "Terkecil" = c(min_1, min_2), "Q1" = c(q1_1, q1_2), "Nilai.Tengah" = c(med_1, med_2),
-                 "Q3" = c(q3_1, q3_2), "Terbesar" = c(max_1, max_2))
-    } else if(dtSource2() == "Data Tersedia"){
+      stat <- c("Banyak Data", "Rata-rata", "Deviasi Standar", "Nilai Terkecil", "Q1", "Nilai Tengah", "Q3", "Nilai Terbesar")
+      val1 <- c(ukuran_1, rata2_1, std_1, min_1, q1_1, med_1, q3_1, max_1)
+      val2 <- c(ukuran_2, rata2_2, std_2, min_2, q1_2, med_2, q3_2, max_2)
+      tbl <- data.frame(stat, val1, val2)
+      colnames(tbl) <- c("", paste(input$var1_fl), paste(input$var2_fl))
+      tbl
+    }
+    
+    ## untuk pilihan data tersedia
+    else if(dtSource2() == "Data Tersedia"){
       df2 <- req(dataset2Input())
       xx1 <- req(x1())
       var_1 <- df2[,xx1]
@@ -311,54 +538,102 @@ server <- function(input, output, session) {
       med_2 <- quantile(var_2, probs = 0.5)
       q3_2 <- quantile(var_2, probs = 0.75)
       max_2 <- max(var_2)
-      data.frame("Ukuran" = c(ukuran_1, ukuran_2), "Rata2" = c(rata2_1, rata2_2), "Dev.Std" = c(std_1, std_2),
-                 "Terkecil" = c(min_1, min_2), "Q1" = c(q1_1, q1_2), "Nilai.Tengah" = c(med_1, med_2),
-                 "Q3" = c(q3_1, q3_2), "Terbesar" = c(max_1, max_2))
+      stat <- c("Banyak Data", "Rata-rata", "Deviasi Standar", "Nilai Terkecil", "Q1", "Nilai Tengah", "Q3", "Nilai Terbesar")
+      val1 <- c(ukuran_1, rata2_1, std_1, min_1, q1_1, med_1, q3_1, max_1)
+      val2 <- c(ukuran_2, rata2_2, std_2, min_2, q1_2, med_2, q3_2, max_2)
+      tbl <- data.frame(stat, val1, val2)
+      colnames(tbl) <- c("", paste(input$var1_dt), paste(input$var2_dt))
+      tbl
     }
   })
   
   # output plot dua variabel
-  output$plot2 <- renderPlot({
+  output$plot2 <- renderPlotly({
+    
+    ## untuk pilihan unggah dokumen
     if(dtSource2() == "Unggah Dokumen"){
       df <- data.frame(file2Input())
       var1 <- df[, var1flInput()]
       var2 <- df[, var2flInput()]
+      df <- data.frame("input$var1_fl" = var1, "input$var2_fl" = var2)
+      colnames(df) <- c(paste(input$var1_fl), paste(input$var2_fl))
+      df <- stack(df)
+      
+      ### histogram
       if(plot3Input() == "Histogram"){
-        par(mfrow = c(2, 1))
-        hist(var1, col = 'gray', main = paste("Histogram", input$var1_fl), xlab = paste(input$var1_fl))
-        hist(var2, col = 'gray', main = paste("Histogram", input$var2_fl), xlab = paste(input$var2_fl))
-      } else if(plot3Input() == "Boxplot"){
-        par(mfrow = c(2, 1))
-        boxplot(var1, main = paste("Boxplot", input$var1_fl), horizontal = TRUE)
-        boxplot(var2, main = paste("Boxplot", input$var2_fl), horizontal = TRUE)
-      } else if(plot3Input() == "Dotplot"){
-        par(mfrow = c(2, 1))
-        stripchart(var1, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
-                   main = paste("Dotplot", input$var1_fl), xlab = paste(input$var1_fl))
-        stripchart(var2, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
-                   main = paste("Dotplot", input$var2_fl), xlab = paste(input$var2_fl))
+        df %>% group_by(ind) %>%
+          do(p = plot_ly(., x = ~values, name = ~ind, type = "histogram", color = ~ind)) %>%
+          subplot(nrows = 2, shareX = TRUE, shareY = TRUE) %>%
+          layout(title = input$jdl_his_3,
+                 xaxis = list(title = paste(input$nama_val)))
       }
-    } else if(dtSource2() == "Data Tersedia"){
+      
+      ### boxplot
+      else if(plot3Input() == "Boxplot" & input$vtc3 == TRUE){
+        plot_ly(df, y = ~values, color = ~ind, type = "box") %>%
+          layout(title = input$jdl_box_3,
+                 yaxis = list(title = paste(input$nama_val2), zeroline = FALSE))
+      }
+      else if(plot3Input() == "Boxplot" & input$vtc3 == FALSE){
+        plot_ly(df, x = ~values, color = ~ind, type = "box") %>%
+          layout(title = input$jdl_box_3,
+                 xaxis = list(title = paste(input$nama_val2), zeroline = FALSE))
+      }
+    }
+    
+    ## untuk pilihan data tersedia
+    else if(dtSource2() == "Data Tersedia"){
       df2 <- req(dataset2Input())
-      xx1 <- req(x1())
-      var_1 <- df2[,xx1]
-      xx2 <- req(x2())
-      var_2 <- df2[,xx2]
+      df2 <- data.frame(df2)
+      df2 <- stack(df2)
+      
+      ### histogram
       if(plot4Input() == "Histogram"){
-        par(mfrow = c(2, 1))
-        hist(var_1, col = 'gray', main = paste("Histogram", input$var1_dt), xlab = paste(input$var1_dt))
-        hist(var_2, col = 'gray', main = paste("Histogram", input$var2_dt), xlab = paste(input$var2_dt))
-      } else if(plot4Input() == "Boxplot"){
-        par(mfrow = c(2, 1))
-        boxplot(var_1, main = paste("Boxplot", input$var1_dt), horizontal = TRUE)
-        boxplot(var_2, main = paste("Boxplot", input$var2_dt), horizontal = TRUE)
-      } else if(plot4Input() == "Dotplot"){
-        par(mfrow = c(2, 1))
-        stripchart(var_1, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
-                   main = paste("Dotplot", input$var1_dt), xlab = paste(input$var1_dt))
-        stripchart(var_2, method = "stack", pch = 21, bg = "gray", col = "black", cex = 3, ylim = c(0,10),
-                   main = paste("Dotplot", input$var2_dt), xlab = paste(input$var2_dt))
+        df2 %>% group_by(ind) %>%
+          do(p = plot_ly(., x = ~values, name = ~ind, type = "histogram", color = ~ind)) %>%
+          subplot(nrows = 2, shareX = TRUE, shareY = TRUE) %>%
+          layout(title = input$jdl_his_4,
+                 xaxis = list(title = paste(input$dataset2)),
+                 yaxis = list(title = "Frekuensi", zeroline = FALSE))
       }
+      
+      ### boxplot
+      else if(plot4Input() == "Boxplot"& input$vtc4 == TRUE){
+        plot_ly(df2, y = ~values, color = ~ind, type = "box") %>%
+          layout(title = input$jdl_box_4,
+                 yaxis = list(title = paste(input$dataset2), zeroline = FALSE))
+      }
+      else if(plot4Input() == "Boxplot"& input$vtc4 == FALSE){
+        plot_ly(df2, x = ~values, color = ~ind, type = "box") %>%
+          layout(title = input$jdl_box_4,
+                 xaxis = list(title = paste(input$dataset2), zeroline = FALSE))
+      }
+    }
+  })
+  
+  # output khusus dotplot dua variabel
+  output$dotplot2 <- renderPlot({
+    
+    ## untuk pilihan unggah dokumen
+    if(dtSource2() == "Unggah Dokumen"){
+      df <- data.frame(file2Input())
+      var1 <- df[, var1flInput()]
+      var2 <- df[, var2flInput()]
+      df <- data.frame("input$var1_fl" = var1, "input$var2_fl" = var2)
+      colnames(df) <- c(paste(input$var1_fl), paste(input$var2_fl))
+      df <- stack(df)
+      if(plot3Input() == "Dotplot"){
+        stripchart(values ~ ind, data = df, method = "stack", pch = 19, col = c("lightgreen", "lightblue"),
+                   cex = input$size3, main = paste(input$jdl_dot_3), xlab = paste(input$nama_val3))
+      }
+      ## untuk pilihan data tersedia
+    } else if(dtSource2() == "Data Tersedia") {
+      df2 <- req(dataset2Input())
+      df2 <- data.frame(df2)
+      df2 <- stack(df2)
+      if(plot4Input() == "Dotplot")
+        stripchart(values ~ ind, data = df2, method = "stack", pch = 19, col = c("lightgreen", "lightblue"),
+                   cex = input$size4, main = paste(input$jdl_dot_4), xlab = paste(input$dataset2))
     }
   })
 }
@@ -389,7 +664,7 @@ shinyApp(ui = ui, server = server)
 
 | url                      |
 | ------------------------ | 
-|[https://diaztrihazam.shinyapps.io/eda_quantitative/](https://diaztrihazam.shinyapps.io/eda_quantitative/)| 
+|[https://icyarassah.shinyapps.io/visualisasidatakuantitatif/](https://icyarassah.shinyapps.io/visualisasidatakuantitatif/)| 
 
 ## :fireworks: Anggota Tim Pengembang
 
