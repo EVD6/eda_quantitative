@@ -37,6 +37,9 @@ Hubungan antara data kuantitatif, visualisasi, dan eksplorasi terletak pada pema
 ```{r}
 library(shiny)
 library(shinythemes)
+library(shinyjs)
+library(colourpicker)
+library(plotly)
 ```
 
 - Mempersipakan data yang tersedia
@@ -647,18 +650,20 @@ shinyApp(ui = ui, server = server)
 ## :camera_flash: Dokumentasi
 
 1️⃣ Screenshot Submenu Satu Variabel
-![submenu - satu variabel](https://github.com/EVD6/eda_quantitative/assets/111562146/1c44824b-0094-42cb-9a29-efd115aef178)
-![upload - satu variable](https://github.com/EVD6/eda_quantitative/assets/111562146/70eeeaf8-96da-4299-967b-7c6445bf8aec)
-![upload - satu variable - boxplot](https://github.com/EVD6/eda_quantitative/assets/111562146/a89fad97-c59f-46f2-9d79-b627e7e646d6)
-![avail - satu variabel  dotplot](https://github.com/EVD6/eda_quantitative/assets/111562146/d2d8d8d8-a41d-459a-b2f8-93937650acc1)
+![1](https://github.com/EVD6/eda_quantitative/assets/111562146/2e5dbdfa-5cf0-451f-ac81-099dd36dace4)
+![2](https://github.com/EVD6/eda_quantitative/assets/111562146/72c9fbe6-0ab9-4b72-8048-5eb2766f93b0)
+![3](https://github.com/EVD6/eda_quantitative/assets/111562146/ab93234d-d937-43b5-a86c-0138dcc28e42)
+![4](https://github.com/EVD6/eda_quantitative/assets/111562146/cb50bf3c-47e2-467d-8257-0c44c19ffdc2)
+![5](https://github.com/EVD6/eda_quantitative/assets/111562146/baa54ade-a1f0-43f6-b4fb-beb87a7cbd2d)
 
 2️⃣ Screenshot Submenu Dua Variabel
-![submenu- dua variabel](https://github.com/EVD6/eda_quantitative/assets/111562146/e3f4e9c5-063f-42d7-84ff-e7061b93cce1)
-![upload - dua variable](https://github.com/EVD6/eda_quantitative/assets/111562146/407ec9a6-d96e-46a8-89ce-d308dca11cf1)
-![avail - dua variable](https://github.com/EVD6/eda_quantitative/assets/111562146/1f8f1cfd-d5be-4f6f-9ecc-af67cbbe8096)
+![6](https://github.com/EVD6/eda_quantitative/assets/111562146/181863de-8746-45f8-82ad-2d786b5b2f5a)
+![7](https://github.com/EVD6/eda_quantitative/assets/111562146/7a9fc149-5886-4fa5-8421-b94ee2ebd110)
+![8](https://github.com/EVD6/eda_quantitative/assets/111562146/9c45391a-6862-4d1d-8f3a-a34847f21266)
 
 3️⃣ Screenshot Submenu Tentang
-![submenu - tentang](https://github.com/EVD6/eda_quantitative/assets/111562146/884eef20-4864-416f-b681-fd90fc11111a)
+![9](https://github.com/EVD6/eda_quantitative/assets/111562146/d34c5e90-0405-4546-84a7-ed389d00e41b)
+
 
 ## :video_camera: Demo
 
